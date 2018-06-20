@@ -10,11 +10,7 @@ function get_mon_config {
   local monmap_add=""
   while [[ -z "${monmap_add// }" && "${timeout}" -gt 0 ]]; do
     # Get the ceph mon pods (name and IP) from the Kubernetes API. Formatted as a set of monmap params
-    if [[ ${K8S_HOST_NETWORK} -eq 0 ]]; then
-      monmap_add=$(kubectl get pods --selector="${K8S_MON_SELECTOR}" -o template --template="{{range .items}}{{if .status.podIP}}--add {{.metadata.name}} {{.status.podIP}}:6789 {{end}} {{end}}")
-    else
-      monmap_add=$(kubectl get pods --selector="${K8S_MON_SELECTOR}" -o template --template="{{range .items}}{{if .status.podIP}}--add {{.metadata.nodeName}} {{.status.podIP}}:6789 {{end}} {{end}}")
-    fi
+    monmap_add=$(kubectl get pods --selector="${K8S_MON_SELECTOR}" -o template --template="{{range .items}}{{if .status.podIP}}--add {{.metadata.nodeName}} {{.status.podIP}}:6789 {{end}} {{end}}")
     (( timeout-- ))
     sleep 1
   done
@@ -31,6 +27,9 @@ function get_mon_config {
 }
 
 function start_mon {
+  #Required Vars
+  : "${MON_IP?}"
+  : "${MON_NAME?}"
 
   if [ ! -e "$MON_DATA_DIR/keyring" ]; then
      get_mon_config
@@ -69,16 +68,8 @@ function start_mon {
   else
     log "Existing mon, trying to rejoin cluster..."
 
-    if [[ ! -f "$MON_MAP" ]]; then
-      get_mon_config
-    fi
-    # Be sure that the mon name of the current monitor in the monmap is equal to ${MON_NAME}.
-    # Names can be different in case of full qualifed hostnames
-    MON_ID=$(monmaptool --print ${MON_MAP} | sed -n "s/^.*${MON_IP}:6789.*mon\.//p")
-    if [[ -n "$MON_ID" && "$MON_ID" != "$MON_NAME" ]]; then
-      monmaptool --rm $MON_ID $MON_MAP >/dev/null
-      monmaptool --add $MON_NAME $MON_IP $MON_MAP >/dev/null
-    fi
+    get_mon_config
+
     ceph-mon --setuser ceph --setgroup ceph --cluster "${CLUSTER}" -i "${MON_NAME}" --inject-monmap "$MON_MAP" --keyring "$MON_KEYRING" --mon-data "$MON_DATA_DIR"
 
     timeout 7 ceph "${CLI_OPTS[@]}" mon add "${MON_NAME}" "${MON_IP}:6789" || true

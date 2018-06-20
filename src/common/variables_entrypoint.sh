@@ -1,13 +1,12 @@
 #!/bin/bash
 set -e
 
-ALL_CMDS="mon"
+ALL_CMDS="mon mgr"
 
 #########################
 # REQUIRED VARIABLES #
 #########################
-: "${MON_IP?}"
-: "${CLUSTER_IP?}"
+
 
 #########################
 # LIST OF ALL VARIABLES #
@@ -15,7 +14,6 @@ ALL_CMDS="mon"
 
 HOSTNAME=$(uname -n | cut -d'.' -f1)
 : "${CMD:=${1}}" # default cmd to first argument
-: "${MON_NAME:=${HOSTNAME}}"
 : "${RGW_NAME:=${HOSTNAME}}"
 : "${RBD_MIRROR_NAME:=${HOSTNAME}}"
 : "${MGR_NAME:=${HOSTNAME}}"
@@ -43,6 +41,6 @@ MDS_BOOTSTRAP_KEYRING=/tmp/ceph/bootstrap-mds/${CLUSTER}.keyring
 RGW_BOOTSTRAP_KEYRING=/tmp/ceph/bootstrap-rgw/${CLUSTER}.keyring
 OSD_BOOTSTRAP_KEYRING=/tmp/ceph/bootstrap-osd/${CLUSTER}.keyring
 RBD_MIRROR_BOOTSTRAP_KEYRING=/tmp/ceph/bootstrap-rbd/${CLUSTER}.keyring
-MGR_KEYRING=/tmp/ceph/mgr/${CLUSTER}-${MGR_NAME}/keyring
+MGR_KEYRING=/var/lib/ceph/mgr/${CLUSTER}-${MGR_NAME}/keyring
 RBD_MIRROR_KEYRING=/tmp/ceph/${CLUSTER}.client.rbd-mirror.${HOSTNAME}.keyring
 OSD_PATH_BASE=/var/lib/ceph/osd/${CLUSTER}
