@@ -2,9 +2,9 @@ FROM polargeospatialcenter/ceph-base
 
 #ADD test/etc-ceph/* /etc/ceph/
 
-ADD *.sh /ceph/
+COPY src /ceph
 
 VOLUME ["/etc/ceph"]
 
 WORKDIR /ceph
-ENTRYPOINT ["/ceph/entrypoint.sh"]
+ENTRYPOINT ["sh","entrypoint.sh"]
