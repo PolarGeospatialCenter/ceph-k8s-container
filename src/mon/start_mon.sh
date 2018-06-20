@@ -10,7 +10,7 @@ function get_mon_config {
   local monmap_add=""
   while [[ -z "${monmap_add// }" && "${timeout}" -gt 0 ]]; do
     # Get the ceph mon pods (name and IP) from the Kubernetes API. Formatted as a set of monmap params
-    monmap_add=$(kubectl get pods --selector="${K8S_MON_SELECTOR}" -o template --template="{{range .items}}{{if .status.podIP}}--add {{.metadata.nodeName}} {{.status.podIP}}:6789 {{end}} {{end}}")
+    monmap_add=$(kubectl get pods --selector="${K8S_MON_SELECTOR}" -o template --template="{{range .items}}{{if .status.podIP}}--add {{.spec.nodeName}} {{.status.podIP}}:6789 {{end}} {{end}}")
     (( timeout-- ))
     sleep 1
   done
