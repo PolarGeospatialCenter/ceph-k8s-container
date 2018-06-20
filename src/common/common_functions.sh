@@ -59,3 +59,11 @@ function invalid_cmd {
 function valid_cmd {
   log "Valid values for CMD are $(to_uppercase "$ALL_CMDS")."
 }
+
+# ceph config file exists or die
+function check_config {
+  if [[ ! -e /etc/ceph/ceph.conf ]]; then
+    log "ERROR- /etc/ceph/ceph.conf must exist; get it from your existing mon"
+    exit 1
+  fi
+}

@@ -17,6 +17,11 @@ case "$CMD" in
     source mon/start_mon.sh
     start_mon
     ;;
+  mgr)
+    # Launch MGR
+    source mgr/start_mgr.sh
+    start_mgr
+    ;;
   *)
     log "Error: Please specficy a valid command."
     exit 1
