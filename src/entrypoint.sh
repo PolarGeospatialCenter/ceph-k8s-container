@@ -22,6 +22,16 @@ case "$CMD" in
     source mgr/start_mgr.sh
     start_mgr
     ;;
+  prepare)
+    # Launch Prepare
+    source osd/prepare_osd.sh
+    prepare_osd
+    ;;
+  start)
+    # Launch OSD
+    source mgr/start_osd.sh
+    start_osd
+    ;;
   *)
     log "Error: Please specficy a valid command."
     exit 1
