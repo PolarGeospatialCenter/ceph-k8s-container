@@ -2,6 +2,7 @@
 set -e
 
 function get_mon_config {
+  sleep 5
   # Get fsid from ceph.conf
   local fsid
   fsid=$(ceph-conf --lookup fsid -c /etc/ceph/"${CLUSTER}".conf)
