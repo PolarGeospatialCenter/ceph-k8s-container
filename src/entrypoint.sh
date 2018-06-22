@@ -22,12 +22,12 @@ case "$CMD" in
     source mgr/start_mgr.sh
     start_mgr
     ;;
-  prepare)
+  prepare_osd)
     # Launch Prepare
     source osd/prepare_osd.sh
     prepare_osd
     ;;
-  start)
+  start_osd)
     # Launch OSD
     source osd/start_osd.sh
     start_osd
