@@ -29,7 +29,7 @@ case "$CMD" in
     ;;
   start)
     # Launch OSD
-    source mgr/start_osd.sh
+    source osd/start_osd.sh
     start_osd
     ;;
   *)
