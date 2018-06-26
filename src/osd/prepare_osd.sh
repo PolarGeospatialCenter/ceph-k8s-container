@@ -9,6 +9,8 @@ function prepare_osd {
   log "Editing lvm.conf..."
   sed -i 's/udev_sync = 1/udev_sync = 0/g; s/udev_rules = 1/udev_rules = 0/' /etc/lvm/lvm.conf
 
+  OSD_DEVICE=$(realpath $OSD_DEVICE)
+
   if [ ! -f "/var/lib/ceph/bootstrap-osd/ceph.keyring" ]; then
     log "Error: Ceph keyring does not exist."
     exit 1
