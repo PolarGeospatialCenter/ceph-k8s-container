@@ -5,7 +5,7 @@ function prepare_osd {
   #Required Vars
   : "${OSD_DEVICE?}"
   : "${OSD_ZAP?}"
-  : "${K8S_DISK_NAME}"
+  : "${K8S_DISK_NAME?}"
 
   log "Editing lvm.conf..."
   sed -i 's/udev_sync = 1/udev_sync = 0/g; s/udev_rules = 1/udev_rules = 0/' /etc/lvm/lvm.conf
@@ -37,14 +37,18 @@ function get_osd_info {
   vgscan --mknodes
   VG_NAME=$(pvs --no-headings $OSD_DEVICE -o vg_name |xargs) || return 1
   LV_NAME=$(lvs --no-headings $VG_NAME -o lv_name |xargs) || return 1
-  JSON=$(ceph-bluestore-tool show-label --dev /dev/$VG_NAME/$LV_NAME) || return 1
+  JSON=$(ceph-bluestore-tool --no-mon-config show-label --dev /dev/$VG_NAME/$LV_NAME) || return 1
 
   UUID=$(echo $JSON |jq '.[].osd_uuid' -r) || return 1
   ID=$(echo $JSON |jq '.[].whoami' -r) || return 1
+
+  export UUID=$UUID
+  export ID=$ID
 
   return 0
 }
 
 function sync_osd_info {
-  kubectl get disk $K8S_DISK_NAME -o json |jq '.osdInfo.id=env.ID | .osdInfo.uuid=env.UUID' | kubectl apply -f -
+  JSON_PATCH='{"osdInfo":{"id": "", "uuid": ""}}'
+  kubectl patch disk $K8S_DISK_NAME --type merge -p "$(echo $JSON_PATCH |jq '.osdInfo.id=env.ID | .osdInfo.uuid=env.UUID')"
 }
