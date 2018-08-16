@@ -1,6 +1,9 @@
-FROM polargeospatialcenter/ceph-base
+FROM polargeospatialcenter/ceph-base:latest
 
 #ADD test/etc-ceph/* /etc/ceph/
+
+COPY bin /ceph/bin
+RUN chmod -R +x /ceph/bin
 
 COPY src /ceph
 COPY qtainer /bin
