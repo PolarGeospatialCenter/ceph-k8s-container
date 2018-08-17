@@ -32,6 +32,10 @@ case "$CMD" in
     source osd/start_osd.sh
     start_osd
     ;;
+  debug)
+    # Run a loop for debugging.
+    while true; do sleep 2; done
+    ;;
   *)
     log "Error: Please specficy a valid command."
     exit 1
