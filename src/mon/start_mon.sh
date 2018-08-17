@@ -11,7 +11,7 @@ function get_mon_config {
   local monmap_add=""
   while [[ -z "${monmap_add// }" && "${timeout}" -gt 0 ]]; do
     # Get the ceph mon pods (name and IP) from the Kubernetes API. Formatted as a set of monmap params
-    monmap_add=$(kubectl get pods --selector="${K8S_MON_SELECTOR}" -o template --template="{{range .items}}{{if .status.podIP}}--add {{.metadata.name}} {{.status.podIP}}:6789 {{end}} {{end}}")
+    monmap_add=$(kubectl get pods --selector="${K8S_MON_SELECTOR}" -o template --template="{{range .items}}{{if .status.podIP}}--add {{.metadata.name}} {{ if gt (len .status.podIP) 15 }}[{{.status.podIP}}]{{ else }}{{.status.podIP}}{{ end }}:6789 {{end}} {{end}}")
     (( timeout-- ))
     sleep 1
   done
@@ -68,6 +68,7 @@ function start_mon {
   # Required Vars
   : "${MON_IP?}"
   : "${MON_NAME?}"
+  : "${K8S_NAMESPACE?}"
 
   # Run checks for keyring and ceph-conf.
 
@@ -85,24 +86,29 @@ function start_mon {
   touch "$MON_HISTORY_DIR/$MON_NAME"
 
   # Check Quorum Status
-  quorum=$(timeout 5 ceph -s > /dev/null)$? || true
+  quorum=$(timeout 5 ceph -s ${CLI_OPTS[@]} > /dev/null)$? || true
 
   # If quorum add monitor
   if [[ $quorum -eq 0 ]] ; then
     log "Quorum exists, adding monitor to online cluster."
 
-    currentMap=$(timeout 5 ceph mon dump)
+    currentMap=$(timeout 5 ceph "${CLI_OPTS[@]}" mon dump)
     log "Current map: $currentMap"
 
     for id in $pastIds; do
       log "Checking current map for past id: $id"
       if echo $currentMap | grep -q $id; then
         log "Removing $id from cluster"
-        ceph mon remove $id
+        ceph "${CLI_OPTS[@]}" mon remove $id
         rm "$MON_HISTORY_DIR/$id"
       fi
 
     done
+
+    v6regexp="^[a-fA-F0-9]{1,4}:.*:[a-fA-F0-9]{1,4}$"
+    if [[ ${MON_IP} =~ $v6regexp ]]; then
+      MON_IP="[${MON_IP}]"
+    fi
 
     timeout 7 ceph "${CLI_OPTS[@]}" mon add "${MON_NAME}" "${MON_IP}:6789"
 
@@ -116,7 +122,7 @@ function start_mon {
     # If sucess increment counter
     # if counter is greater than n/2 then continue
 
-    /bin/qtainer -w 2 -t 1m -n ceph -l "${K8S_MON_SELECTOR}"
+    /bin/qtainer -w 2 -t 1m -n ${K8S_NAMESPACE} -l "${K8S_MON_SELECTOR}"
     log "Qtainer exited sucessfully"
   fi
 
