@@ -44,4 +44,4 @@ RBD_MIRROR_KEYRING=/tmp/ceph/${CLUSTER}.client.rbd-mirror.${HOSTNAME}.keyring
 OSD_PATH_BASE=/var/lib/ceph/osd/${CLUSTER}
 
 # This is ONLY used for the CLI calls, e.g: ceph $CLI_OPTS health
-CLI_OPTS=(--cluster ${CLUSTER} --keyring ${ADMIN_KEYRING})
+CLI_OPTS=(--cluster ${CLUSTER})
