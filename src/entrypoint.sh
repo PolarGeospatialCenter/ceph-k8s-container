@@ -22,6 +22,11 @@ case "$CMD" in
     source mgr/start_mgr.sh
     start_mgr
     ;;
+  mds)
+    # Launch Monitor
+    source mds/start_mds.sh
+    start_mds
+    ;;
   prepare_osd)
     # Launch Prepare
     source osd/prepare_osd.sh

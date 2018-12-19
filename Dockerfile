@@ -5,6 +5,7 @@ FROM polargeospatialcenter/ceph-base:latest
 #ADD test/etc-ceph/* /etc/ceph/
 
 COPY bin /ceph/bin
+COPY bin /usr/local/bin
 RUN chmod -R +x /ceph/bin
 
 COPY src /ceph

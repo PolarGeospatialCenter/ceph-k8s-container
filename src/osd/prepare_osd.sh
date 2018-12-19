@@ -1,11 +1,49 @@
 #!/bin/bash
 set -e
+OSD_DEVICE=/dev/osd
+
+function overprovision_ssd {
+  hdparmOutput=$(hdparm -N $OSD_DEVICE 2>/dev/null || echo -n "")
+  if [[ $hdparmOutput == "" ]]; then
+    log "HDParm returned error or nothing, assuming regular hdd"
+    return 0
+  fi
+
+  availableSize=$(printf "$hdparmOutput" | gawk '{if (match($0, /([0-9]+)\/([0-9]+), HPA/, arr)){ print arr[1] }}')
+  totalSize=$(printf "$hdparmOutput" | gawk '{if (match($0, /([0-9]+)\/([0-9]+), HPA/, arr)){ print arr[2] }}')
+  if [ $availableSize -eq $totalSize ]; then
+    if [[ "$OSD_ZAP" == "true" ]]; then
+      log "Attempting to overprovision ssd, reboot required to take effect"
+      newAvailableSize=$(($totalSize * 1024/1000 * 3/4))
+      hdparm -Np$newAvailableSize --yes-i-know-what-i-am-doing $OSD_DEVICE
+      availableSize=$newAvailableSize
+    fi
+  fi
+
+  currentReportedSize=$(blockdev --getsize $OSD_DEVICE)
+  if [ $availableSize -eq $currentReportedSize ]; then
+    return 0
+  fi
+
+
+  return 2
+}
 
 function prepare_osd {
-  OSD_DEVICE=/dev/osd
-  # Exit if disk not overprovisioned
-  hdparmOutput=$(hdparm -N $OSD_DEVICE 2>/dev/null || echo -n "")
-  printf "$hdparmOutput" | gawk '{if (match($0, /([0-9]+)\/([0-9]+), HPA/, arr)){if (arr[1] == arr[2]){print "Disk not overprovisioned"; exit 1} }}' || exit 1
+  : "${OSD_ZAP?}"
+
+  if ! overprovision_ssd ; then
+    log "SSD Not Overprovisioned"
+    exit 1
+  fi
+
+  if [ "$OSD_ZAP" == "true" ]; then
+    log "Zapping OSD device $OSD_DEVICE"
+    wipefs -a --force $OSD_DEVICE
+    dd if=/dev/zero of=$OSD_DEVICE count=5k bs=1k
+  fi
+
+  /ceph/bin/write-crush-location-file.sh
 
   UUID=$(uuidgen)
   OSD_SECRET=$(ceph-authtool --gen-print-key)
@@ -16,7 +54,8 @@ function prepare_osd {
   chown ceph:ceph /ceph-osd
 
   ln -s /dev/osd /ceph-osd/block
-  ceph-authtool --create-keyring /ceph-osd/keyring --name osd.$ID --add-key $OSD_SECRET
-  ceph-osd --cluster ceph --osd-objectstore bluestore --mkfs -i $ID --osd-data /ceph-osd/ --osd-uuid $UUID --keyring /ceph-osd/keyring
+  ceph-authtool --create-keyring /ceph-osd/keyring --name osd.$OSD_ID --add-key $OSD_SECRET
+  ceph-osd --cluster ceph --osd-objectstore bluestore --mkfs -i $OSD_ID --osd-data /ceph-osd/ --osd-uuid $UUID --keyring /ceph-osd/keyring
+  ceph-bluestore-tool set-label-key -k osd_key -v $OSD_SECRET --dev /dev/osd
   chown -R ceph:ceph /ceph-osd/
 }
