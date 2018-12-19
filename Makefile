@@ -3,7 +3,7 @@
 all: docker push
 
 docker:
-	docker build -t janse180/ceph-k8s-container:latest .
+	docker build -t pgc-docker.artifactory.umn.edu/ceph-k8s-container:latest .
 
 push:
-	docker push janse180/ceph-k8s-container:latest
+	docker push pgc-docker.artifactory.umn.edu/ceph-k8s-container:latest

@@ -9,7 +9,8 @@ function start_mgr {
     mkdir -p $(dirname $MGR_KEYRING)
     #check_admin_key
     # Create ceph-mgr key
-    ceph "${CLI_OPTS[@]}" auth get-or-create mgr."$MGR_NAME" mon 'allow profile mgr' osd 'allow *' mds 'allow *' -o "$MGR_KEYRING"
+    ceph "${CLI_OPTS[@]}" auth --keyring $MGR_BOOTSTRAP_KEYRING --name client.bootstrap-mgr \
+      get-or-create mgr."$MGR_NAME" mon 'allow profile mgr' osd 'allow *' mds 'allow *' -o "$MGR_KEYRING"
     chown "${CHOWN_OPT[@]}" ceph. "$MGR_KEYRING"
     chmod 600 "$MGR_KEYRING"
   fi
@@ -17,5 +18,5 @@ function start_mgr {
   log "Starting Ceph Mgr"
   # start ceph-mgr
   #while true; do sleep 2; done
-  exec /usr/bin/ceph-mgr "${DAEMON_OPTS[@]}" -i "$MGR_NAME"
+  exec /usr/bin/ceph-mgr "${DAEMON_OPTS[@]}" --keyring $MGR_KEYRING -i "$MGR_NAME"
 }
