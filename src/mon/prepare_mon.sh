@@ -1,29 +1,41 @@
 #!/bin/bash
 set -e
 
-function prepare_osd {
+function prepare_mon {
   #Required Vars
-  : "${OSD_DEVICE?}"
-  : "${OSD_ZAP?}"
+  : "${FSID?}"
+  : "${MON_NAME?}"
 
-  log "Editing lvm.conf..."
-  sed -i 's/udev_sync = 1/udev_sync = 0/g; s/udev_rules = 1/udev_rules = 0/' /etc/lvm/lvm.conf
+  touch /etc/ceph/ceph.conf
 
-  find /sys/block/sd* |xargs -n 1 udevadm test > /dev/null 2>&1
-  OSD_DEVICE=$(realpath $OSD_DEVICE)
-
-  if [ ! -f "/var/lib/ceph/bootstrap-osd/ceph.keyring" ]; then
-    log "Error: Ceph keyring does not exist."
+  # Error if mon data directory already exists.
+  if [ -e "$MON_DATA_DIR/keyring" ]; then
+    log "Monitor data directory already exists, exiting..."
     exit 1
   fi
 
-  if [ "$OSD_ZAP" == "true" ]; then
-    log "Zapping OSD device $OSD_DEVICE"
-    ceph-volume lvm zap $OSD_DEVICE --destroy
+  if [ ! -e "$MON_BOOTSTRAP_KEYRING" ]; then
+    log "ERROR: $MON_BOOTSTRAP_KEYRING must exist."
+    exit 1
   fi
 
-  log "Starting prepare on OSD device $OSD_DEVICE"
-  ceph-volume lvm prepare --bluestore --data $OSD_DEVICE
+  # Fix for Kubernetes read only secrets.
+  mkdir -p "/tmp/ceph/mon/$CLUSTER-$MON_NAME"
+  cp $MON_BOOTSTRAP_KEYRING $MON_KEYRING
+
+  # Add Admin Keyring
+  for keyring in $ADMIN_KEYRING; do
+   if [ -f "$keyring" ]; then
+     ceph-authtool "$MON_KEYRING" --import-keyring "$keyring"
+   fi
+  done
+
+  # Prepare the monitor daemon's directory with the map and keyring
+  #ceph-mon --setuser ceph --setgroup ceph --cluster "${CLUSTER}" --mkfs -i "${MON_NAME}" --inject-monmap "$MON_MAP" --keyring "$MON_KEYRING" --mon-data "$MON_DATA_DIR"
+  ceph-mon --setuser ceph --setgroup ceph --cluster "${CLUSTER}" --mkfs -i "${MON_NAME}" --fsid $FSID --keyring $MON_KEYRING --mon-data "$MON_DATA_DIR" 
+
+  # dir=$(ls -lah $MON_DATA_DIR)
+  # log $dir
 
   exit 0
 }

@@ -12,10 +12,15 @@ create_mandatory_directories
 CMD=$(to_lowercase "${CMD}")
 
 case "$CMD" in
-  mon)
+  start_mon)
     # Launch Monitor
     source mon/start_mon.sh
     start_mon
+    ;;
+  prepare_mon)
+    # Launch Monitor
+    source mon/prepare_mon.sh
+    prepare_mon
     ;;
   mgr)
     # Launch MGR
@@ -42,7 +47,7 @@ case "$CMD" in
     while true; do sleep 2; done
     ;;
   *)
-    log "Error: Please specficy a valid command."
+    log "Error: Please specficy a valid command: got $CMD"
     exit 1
     ;;
 esac
