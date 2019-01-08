@@ -10,7 +10,7 @@ function prepare_mon {
   FSID=$(kubectl get cephcluster $CLUSTER -n $CLUSTER_NAMESPACE -o template --template="{{.spec.fsid}}")
   MON_ID=$(cat /dev/urandom | tr -dc 'a-z0-9' | fold -w 6 | head -n 1)
 
-  touch /etc/ceph/ceph.conf
+  touch /etc/ceph/$CLUSTER.conf
 
   # Error if mon data directory already exists.
   if [ -e "$MON_DATA_DIR/keyring" ]; then

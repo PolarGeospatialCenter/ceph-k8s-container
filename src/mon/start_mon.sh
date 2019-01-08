@@ -8,7 +8,7 @@ function start_mon {
   IP=`hostname -i`
   echo $IP
   # Run checks for keyring and ceph-conf.
-  touch /etc/ceph/ceph.conf
+  #touch /etc/ceph/ceph.conf
 
   # Error if mon data directory does not exist.
   if [ ! -e "$MON_DATA_DIR/keyring" ]; then
