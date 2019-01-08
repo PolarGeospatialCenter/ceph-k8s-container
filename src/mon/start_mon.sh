@@ -3,7 +3,7 @@ set -e
 
 function start_mon {
   # Required Vars
-  : "${MON_NAME?}"
+  : "${MON_ID?}"
 
   IP=`hostname -i`
   echo $IP
@@ -19,5 +19,5 @@ function start_mon {
     # start MON
   log "Starting Ceph-Mon"
   #while true; do sleep 2; done
-  exec /usr/bin/ceph-mon "${DAEMON_OPTS[@]}" -i "${MON_NAME}" --mon-data "$MON_DATA_DIR" --public-addr $IP
+  exec /usr/bin/ceph-mon "${DAEMON_OPTS[@]}" -i "${MON_ID}" --mon-data "$MON_DATA_DIR" --public-addr $IP
 }
