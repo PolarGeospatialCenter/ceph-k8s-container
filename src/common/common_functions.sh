@@ -26,6 +26,7 @@ function create_mandatory_directories {
 
   # Make the monitor directory
   mkdir -p "$MON_DATA_DIR"
+  chown "${CHOWN_OPT[@]}" -R ceph. $MON_DATA_DIR
 
   # Create socket directory
   mkdir -p /var/run/ceph
