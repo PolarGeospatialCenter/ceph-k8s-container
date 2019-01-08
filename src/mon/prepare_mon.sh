@@ -42,8 +42,8 @@ function prepare_mon {
   # log $dir
 
   cat << EOF > /tmp/mon.yaml
+apiVersion: ceph.k8s.pgc.umn.edu/v1alpha1
 kind: CephMon
-version: ceph.k8s.pgc.umn.edu/v1alpha1
 metadata:
   name: $CLUSTER-mon.$MON_ID
   namespace: $CLUSTER_NAMESPACE
