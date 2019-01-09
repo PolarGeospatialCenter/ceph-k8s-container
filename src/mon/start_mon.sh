@@ -16,8 +16,9 @@ function start_mon {
     exit 1
   fi
 
-  FSID=$(ceph-conf --lookup fsid)
-  monmaptool --create --add $MON_ID $IP:6789 --fsid "${FSID}" "/tmp/monmap"
+  ceph-monstore-tool /mon/data get monmap -- --out /tmp/monmap
+  monmaptool --clobber --rm $MON_ID "/tmp/monmap"
+  monmaptool --clobber --add $MON_ID $IP:6789 "/tmp/monmap"
 
   /usr/bin/ceph-mon "${DAEMON_OPTS[@]}" -i "${MON_ID}" --inject-monmap /tmp/monmap --mon-data "$MON_DATA_DIR" --public-addr $IP
 
