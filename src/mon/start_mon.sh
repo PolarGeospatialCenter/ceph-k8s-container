@@ -16,6 +16,11 @@ function start_mon {
     exit 1
   fi
 
+  FSID=$(ceph-conf --lookup fsid)
+  monmaptool --fsid "${FSID}" "/tmp/monmap"
+
+  /usr/bin/ceph-mon "${DAEMON_OPTS[@]}" -i "${MON_ID}" --inject-monmap /tmp/monmap --mon-data "$MON_DATA_DIR" --public-addr $IP
+
     # start MON
   log "Starting Ceph-Mon"
   #while true; do sleep 2; done
