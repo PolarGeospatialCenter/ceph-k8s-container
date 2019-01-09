@@ -49,8 +49,8 @@ metadata:
   namespace: $CLUSTER_NAMESPACE
 spec:
   clusterName: $CLUSTER
-  ID: $MON_ID
-  PvSelector: $PV_LABEL_SELECTOR
+  id: $MON_ID
+  pvSelectorString: $PV_LABEL_SELECTOR
 EOF
 
   kubectl apply -f /tmp/mon.yaml
