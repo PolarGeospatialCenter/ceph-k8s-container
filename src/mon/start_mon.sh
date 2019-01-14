@@ -24,6 +24,8 @@ function start_mon {
     exit 1
   fi
 
+  FSID=$(ceph-conf --lookup fsid)
+
   # Waiting for MON_CONFIGMAP to contain the correct start epoch
   config_start_epoch = $(jq .startEpoch $MON_CONFIGMAP)$? || true
   while [ $config_start_epoch -ne $MON_CLUSTER_START_EPOCH ] ; do
@@ -35,19 +37,22 @@ function start_mon {
   monmap_exists=$(ceph-monstore-tool /mon/data get monmap -- --out /tmp/monmap > /dev/null)$? || true
   # If monmap exists, update
   if [[ $monmap_exists -eq 0 ]] ; then
-    for k in $(jq  '.monMap | keys | .[]' $MON_CONFIGMAP); do
-      map_id=$(jq -r ".monMap[$k].id" $MON_CONFIGMAP)
-      map_port=$(jq -r ".monMap[$k].port" $MON_CONFIGMAP)
-      map_ip=$(jq -r ".monMap[$k].ip" $MON_CONFIGMAP)
-      if [[ ${map_ip} =~ $v6regexp ]]; then
-        map_ip="[${map_ip}]"
-      fi
-
-      mon_in_monmap=$(monmaptool --clobber --rm $map_id "/tmp/monmap")$? || true
-      monmaptool --clobber --add $map_id  $map_ip:$map_port  "/tmp/monmap"
-    done
-    /usr/bin/ceph-mon "${DAEMON_OPTS[@]}" -i "${MON_ID}" --inject-monmap /tmp/monmap --mon-data "$MON_DATA_DIR" --public-addr $IP
+    monmaptool --create --fsid $FSID /tmp/monmap
   fi
+
+  for k in $(jq  '.monMap | keys | .[]' $MON_CONFIGMAP); do
+    map_id=$(jq -r ".monMap[$k].id" $MON_CONFIGMAP)
+    map_port=$(jq -r ".monMap[$k].port" $MON_CONFIGMAP)
+    map_ip=$(jq -r ".monMap[$k].ip" $MON_CONFIGMAP)
+    if [[ ${map_ip} =~ $v6regexp ]]; then
+      map_ip="[${map_ip}]"
+    fi
+
+    mon_in_monmap=$(monmaptool --clobber --rm $map_id "/tmp/monmap")$? || true
+    monmaptool --clobber --add $map_id  $map_ip:$map_port  "/tmp/monmap"
+  done
+  /usr/bin/ceph-mon "${DAEMON_OPTS[@]}" -i "${MON_ID}" --inject-monmap /tmp/monmap --mon-data "$MON_DATA_DIR" --public-addr $IP
+
 
   # Do we need to be in MON_CONFIGMAP?  If we aren't we've never joined.
   quorum=$(timeout 5 ceph ${CLI_OPTS[@]} --keyring $MON_DATA_DIR/keyring mon dump > /dev/null)$? || true
