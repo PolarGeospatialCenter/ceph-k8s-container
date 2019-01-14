@@ -35,7 +35,7 @@ function start_mon {
   monmap_exists=$(ceph-monstore-tool /mon/data get monmap -- --out /tmp/monmap > /dev/null)$? || true
   # If monmap exists, update
   if [[ $monmap_exists -eq 0 ]] ; then
-    for $i in $(jq  '.monMap | keys | .[]' $MON_CONFIGMAP); do
+    for k in $(jq  '.monMap | keys | .[]' $MON_CONFIGMAP); do
       map_id=$(jq -r ".monMap[$k].id" $MON_CONFIGMAP)
       map_port=$(jq -r ".monMap[$k].port" $MON_CONFIGMAP)
       map_ip=$(jq -r ".monMap[$k].ip" $MON_CONFIGMAP)
