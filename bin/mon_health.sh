@@ -2,10 +2,10 @@
 set -e
 
 #Require mon name
-: "${MON_NAME?}"
+: "${MON_ID?}"
 
 #Connect to admin socket and get state
-state=$(timeout 5 ceph daemon mon.$MON_NAME mon_status |jq -r .state)
+state=$(timeout 5 ceph daemon mon.$MON_ID mon_status |jq -r .state)
 
 #Check if state is valid.
 if [ "$state" = "leader" ] || [ "$state" = "peon" ]; then
