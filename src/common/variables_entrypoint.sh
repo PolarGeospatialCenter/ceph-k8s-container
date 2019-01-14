@@ -26,6 +26,7 @@ HOSTNAME=$(uname -n | cut -d'.' -f1)
 : "${K8S_MON_SELECTOR:=app=ceph,daemon=mon}"
 : "${MON_MAP:=/tmp/ceph/monmap-${CLUSTER}}"
 : "${MON_BOOTSTRAP_KEYRING:=/keyrings/mon-bootstrap/keyring}"
+: "${MON_CONFIGMAP:=/config/moncluster/jsonMonMap}"
 
 # This is ONLY used for the daemon's startup, e.g: ceph-osd $DAEMON_OPTS
 DAEMON_OPTS=(--cluster ${CLUSTER} --setuser ceph --setgroup ceph -d)
