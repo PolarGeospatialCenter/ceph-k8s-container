@@ -51,6 +51,10 @@ function start_mon {
     mon_in_monmap=$(monmaptool --clobber --rm $map_id "/tmp/monmap")$? || true
     monmaptool --clobber --add $map_id  $map_ip:$map_port  "/tmp/monmap"
   done
+  
+  mon_in_monmap=$(monmaptool --clobber --rm $MON_ID "/tmp/monmap")$? || true
+  monmaptool --clobber --add $MON_ID  $MON_IP:6789  "/tmp/monmap"
+
   /usr/bin/ceph-mon "${DAEMON_OPTS[@]}" -i "${MON_ID}" --inject-monmap /tmp/monmap --mon-data "$MON_DATA_DIR" --public-addr $IP
 
 
