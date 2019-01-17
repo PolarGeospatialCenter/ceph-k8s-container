@@ -60,7 +60,8 @@ function start_mon {
 
 
   # Do we need to be in MON_CONFIGMAP?  If we aren't we've never joined.
-  quorum=$(timeout 5 ceph ${CLI_OPTS[@]} mon dump > /dev/null)$? || true
+  quorum=$(timeout 5 ceph ${CLI_OPTS[@]} mon dump)$? || true
+  log "Check for quorum returned $quorum"
   # If quorum add monitor
   if [[ $quorum -eq 0 ]] ; then
     log "Quorum exists, adding monitor to online cluster."
