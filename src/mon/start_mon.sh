@@ -35,7 +35,7 @@ function start_mon {
   done
 
   # Update our monmap
-  monmap_exists=$(ceph-monstore-tool /mon/data get monmap -- --out /tmp/monmap > /dev/null)$? || true
+  monmap_exists=$(ceph-monstore-tool /mon/data get monmap -- --out /tmp/monmap  2> /dev/null > /dev/null)$? || true
   # If monmap exists, update
   if [[ $monmap_exists -ne 0 ]] ; then
     monmaptool --create --fsid $FSID /tmp/monmap
