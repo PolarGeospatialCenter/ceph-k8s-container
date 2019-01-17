@@ -27,10 +27,10 @@ function start_mon {
   FSID=$(ceph-conf --lookup fsid)
 
   # Waiting for MON_CONFIGMAP to contain the correct start epoch
-  config_start_epoch = $(jq .startEpoch $MON_CONFIGMAP)$? || true
-  while [ $config_start_epoch -ne $MON_CLUSTER_START_EPOCH ] ; do
+  config_start_epoch=$(jq .startEpoch $MON_CONFIGMAP)
+  while [[ $config_start_epoch -ne $MON_CLUSTER_START_EPOCH ]] ; do
     sleep 1
-    config_start_epoch = $(jq .startEpoch $MON_CONFIGMAP)$? || true
+    config_start_epoch=$(jq .startEpoch $MON_CONFIGMAP)
   done
 
   # Update our monmap
