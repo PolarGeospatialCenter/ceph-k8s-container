@@ -52,7 +52,7 @@ function prepare_osd {
   UUID=$(uuidgen)
   OSD_SECRET=$(ceph-authtool --gen-print-key)
   OSD_ID=$(echo "{\"cephx_secret\": \"$OSD_SECRET\"}" | \
-      ceph osd new $UUID -i - -n client.bootstrap-osd -k /var/lib/ceph/bootstrap-osd/ceph.keyring)
+      ceph osd new $UUID -i - -n client.bootstrap-osd -k /keyrings/client.bootstrap-osd/keyring)
 
   mkdir /ceph-osd
   chown ceph:ceph /ceph-osd
