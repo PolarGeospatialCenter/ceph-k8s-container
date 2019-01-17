@@ -2,11 +2,14 @@
 set -e
 
 function start_osd {
+  # Required Vars
+  : "${CLUSTER?}"
+
   log "Activating on OSD device"
   OSD_KEYRING="/ceph-osd/kerying"
   #ceph-volume lvm activate $OSD_ID $OSD_UUID --no-systemd
   mkdir /ceph-osd
-  ceph-bluestore-tool --cluster=ceph prime-osd-dir --dev /dev/osd --path /ceph-osd
+  ceph-bluestore-tool --cluster=$CLUSTER prime-osd-dir --dev /dev/osd --path /ceph-osd
 
   OSD_ID=$(cat /ceph-osd/whoami)
   log "Found osd id: ${OSD_ID}"
