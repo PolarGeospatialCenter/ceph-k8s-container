@@ -63,7 +63,7 @@ function prepare_osd {
 
   ln -s /dev/osd /ceph-osd/block
   ceph-authtool --create-keyring /ceph-osd/keyring --name osd.$OSD_ID --add-key $OSD_SECRET
-  ceph-osd --cluster $CLUSTER --osd-objectstore bluestore --mkfs -i $OSD_ID --osd-data /ceph-osd/ --osd-uuid $UUID --keyring /ceph-osd/keyring
+  ceph-osd --cluster $CLUSTER --osd-objectstore bluestore --mkfs -i $OSD_ID --osd-data /ceph-osd/ --osd-uuid $UUID --keyring /ceph-osd/keyring --conf=/etc/ceph/$CLUSTER.conf
   ceph-bluestore-tool set-label-key -k osd_key -v $OSD_SECRET --dev /dev/osd
   chown -R ceph:ceph /ceph-osd/
 
