@@ -28,7 +28,7 @@ function prepare_mon {
   cp $MON_BOOTSTRAP_KEYRING $MON_KEYRING
 
   # Add Admin Keyring
-  for keyring in $ADMIN_KEYRING; do
+  for keyring in $(ls /keyrings/**/keyring); do
    if [ -f "$keyring" ]; then
      ceph-authtool "$MON_KEYRING" --import-keyring "$keyring"
    fi
