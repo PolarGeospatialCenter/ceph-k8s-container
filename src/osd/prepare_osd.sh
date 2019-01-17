@@ -35,11 +35,15 @@ function prepare_osd {
   : "${CLUSTER_NAMESPACE?}"
   : "${PV_LABEL_SELECTOR?}"
   : "${DISABLED:=false}"
+  : "${OVERPROVISION:=true}"
 
-  if ! overprovision_ssd ; then
-    log "SSD Not Overprovisioned"
-    exit 1
+  if [ "$OVERPROVISION" == "true" ]; then
+    if ! overprovision_ssd ; then
+      log "SSD Not Overprovisioned"
+      exit 1
+    fi
   fi
+
 
   if [ "$OSD_ZAP" == "true" ]; then
     log "Zapping OSD device $OSD_DEVICE"
