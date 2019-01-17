@@ -31,6 +31,10 @@ function overprovision_ssd {
 
 function prepare_osd {
   : "${OSD_ZAP?}"
+  : "${CLUSTER?}"
+  : "${CLUSTER_NAMESPACE?}"
+  : "${PV_LABEL_SELECTOR?}"
+  : "${DISABLED:=false}"
 
   if ! overprovision_ssd ; then
     log "SSD Not Overprovisioned"
@@ -58,4 +62,19 @@ function prepare_osd {
   ceph-osd --cluster ceph --osd-objectstore bluestore --mkfs -i $OSD_ID --osd-data /ceph-osd/ --osd-uuid $UUID --keyring /ceph-osd/keyring
   ceph-bluestore-tool set-label-key -k osd_key -v $OSD_SECRET --dev /dev/osd
   chown -R ceph:ceph /ceph-osd/
+
+  cat << EOF > /tmp/osd.yaml
+apiVersion: ceph.k8s.pgc.umn.edu/v1alpha1
+kind: CephOsd
+metadata:
+  name: $CLUSTER-osd.$OSD_ID
+  namespace: $CLUSTER_NAMESPACE
+spec:
+  clusterName: $CLUSTER
+  id: $OSD_ID
+  pvSelectorString: $PV_LABEL_SELECTOR
+  disabled: $DISABLED
+EOF
+
+  kubectl apply -f /tmp/osd.yaml
 }
