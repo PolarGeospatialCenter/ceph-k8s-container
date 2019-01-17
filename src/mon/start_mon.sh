@@ -67,7 +67,10 @@ function start_mon {
     currentMap=$(timeout 5 ceph "${CLI_OPTS[@]}" mon dump)
     log "Current map: $currentMap"
 
-    ceph "${CLI_OPTS[@]}" mon rm $MON_ID
+    monrmstatus=$(timeout 7 ceph "${CLI_OPTS[@]}" mon rm $MON_ID)$? || true
+    if [[ $monrmstatus -ne 0 ]]; then
+      log "Failed to remove monitor from existing cluster, returned $monrmstatus"
+    fi
 
     if [[ ${MON_IP} =~ $v6regexp ]]; then
       MON_IP="[${MON_IP}]"
