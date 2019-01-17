@@ -51,7 +51,7 @@ function start_mon {
     mon_in_monmap=$(monmaptool --clobber --rm $map_id "/tmp/monmap")$? || true
     monmaptool --clobber --add $map_id  $map_ip:$map_port  "/tmp/monmap"
   done
-  
+
   mon_in_monmap=$(monmaptool --clobber --rm $MON_ID "/tmp/monmap")$? || true
   monmaptool --clobber --add $MON_ID  $MON_IP:6789  "/tmp/monmap"
 
@@ -67,13 +67,13 @@ function start_mon {
     currentMap=$(timeout 5 ceph "${CLI_OPTS[@]}" mon dump)
     log "Current map: $currentMap"
 
-    ceph "${CLI_OPTS[@]}"  --keyring $MON_DATA_DIR/keyring mon remove $MON_ID
+    ceph "${CLI_OPTS[@]}" mon rm $MON_ID
 
     if [[ ${MON_IP} =~ $v6regexp ]]; then
       MON_IP="[${MON_IP}]"
     fi
 
-    timeout 7 ceph "${CLI_OPTS[@]}" --keyring $MON_DATA_DIR/keyring mon add "${MON_ID}" "${MON_IP}:6789"
+    timeout 7 ceph "${CLI_OPTS[@]}" mon add "${MON_ID}" "${MON_IP}:6789"
   fi
 
   # start MON
