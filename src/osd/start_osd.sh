@@ -13,6 +13,10 @@ function start_osd {
   mkdir /ceph-osd
   ceph-bluestore-tool --cluster=$CLUSTER prime-osd-dir --dev /dev/osd --path /ceph-osd --no-mon-config
 
+  if [[ ! -e /ceph-osd/whoami ]]; then
+    log "No whoami file created.  Prime-osd-dir failed."
+  fi
+
   OSD_ID=$(cat /ceph-osd/whoami)
   log "Found osd id: ${OSD_ID}"
 
