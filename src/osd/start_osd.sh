@@ -21,7 +21,7 @@ function start_osd {
   log "Found osd id: ${OSD_ID}"
 
   log "Building keyring from metadata on OSD"
-  OSD_SECRET=$(ceph-bluestore-tool show-label --dev /dev/osd | jq '."/dev/osd".osd_key' -r -e) || (log "Failed to get key from osd." && exit 1)
+  OSD_SECRET=$(ceph-bluestore-tool show-label --dev /dev/osd --no-mon-config | jq '."/dev/osd".osd_key' -r -e) || (log "Failed to get key from osd." && exit 1)
   ceph-authtool --create-keyring $OSD_KEYRING --name osd.$OSD_ID --add-key $OSD_SECRET \
     --cap mon 'allow profile osd' \
     --cap mgr 'allow profile osd' \
