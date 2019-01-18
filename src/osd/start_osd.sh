@@ -11,7 +11,7 @@ function start_osd {
   touch /keyrings/client.admin/keyring
   #ceph-volume lvm activate $OSD_ID $OSD_UUID --no-systemd
   mkdir /ceph-osd
-  ceph-bluestore-tool --cluster=$CLUSTER prime-osd-dir --dev /dev/osd --path /ceph-osd
+  ceph-bluestore-tool --cluster=$CLUSTER prime-osd-dir --dev /dev/osd --path /ceph-osd --no-mon-config
 
   OSD_ID=$(cat /ceph-osd/whoami)
   log "Found osd id: ${OSD_ID}"
