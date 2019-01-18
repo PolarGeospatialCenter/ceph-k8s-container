@@ -7,6 +7,8 @@ function start_osd {
 
   log "Activating on OSD device"
   OSD_KEYRING="/ceph-osd/kerying"
+  mkdir -p /keyrings/client.admin/
+  touch /keyrings/client.admin/keyring
   #ceph-volume lvm activate $OSD_ID $OSD_UUID --no-systemd
   mkdir /ceph-osd
   ceph-bluestore-tool --cluster=$CLUSTER prime-osd-dir --dev /dev/osd --path /ceph-osd
