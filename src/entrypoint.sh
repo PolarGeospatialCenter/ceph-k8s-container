@@ -42,6 +42,11 @@ case "$CMD" in
     source osd/start_osd.sh
     start_osd
     ;;
+  sync_keyrings)
+    # Sync Keyrings
+    source keyrings/sync_keyrings.sh
+    sync_keyrings
+    ;;
   debug)
     # Run a loop for debugging.
     while true; do sleep 2; done
