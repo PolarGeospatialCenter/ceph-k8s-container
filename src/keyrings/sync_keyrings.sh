@@ -28,7 +28,7 @@ function sync_keyrings {
 
   log "Found keyrings $keyrings"
 
-  for entity in keyrings; do
+  for entity in $keyrings; do
     ceph auth get $entity 2>/dev/null > keyring
     secretName="ceph-$CLUSTER-$entity-keyring"
 
