@@ -26,10 +26,13 @@ function sync_keyrings {
 
   keyrings=$(ceph auth list 2> /dev/null |grep client.)
 
+  log "Found keyrings $keyrings"
+
   for entity in keyrings; do
     ceph auth get $entity 2>/dev/null > keyring
     secretName="ceph-$CLUSTER-$entity-keyring"
 
+    log "Syncing keyring $entity to kuberentes with name $secretName"
     kubectl create secret generic $secretName --from-file=keyring=keyring --dry-run -o yaml | kubectl apply -f -
 
   done
