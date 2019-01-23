@@ -8,11 +8,13 @@ function sync_keyrings {
   ceph-conf --lookup mon_host
   keyring=$(ceph-conf --lookup keyring)
 
-  if [[! -e $keyring ]]; then
+  if [[ ! -e $keyring ]]; then
     log "Keyring $keyring does not exist"
   fi
 
   ping -c 1 $(ceph-conf --lookup mon_host) || true
+
+  ceph mon dump
 
   quorum=$(timeout 5 ceph ${CLI_OPTS[@]} mon dump 2> /dev/null > /dev/null)$? || true
   log "Check for quorum returned $quorum"
