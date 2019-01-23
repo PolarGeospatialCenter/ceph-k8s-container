@@ -16,7 +16,7 @@ function sync_keyrings {
 
   ceph mon dump
 
-  quorum=$(timeout 5 ceph ${CLI_OPTS[@]} mon dump 2> /dev/null > /dev/null)$? || true
+  quorum=$(timeout 5 ceph mon dump 2> /dev/null > /dev/null)$? || true
   log "Check for quorum returned $quorum"
   # If quorum add monitor
   if [[ $quorum -ne 0 ]] ; then
