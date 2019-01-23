@@ -19,7 +19,7 @@ function sync_keyrings {
     ceph auth get $entity 2>/dev/null > keyring
     secretName="ceph-$CLUSTER-$entity-keyring"
 
-    kubectl create secret generic $secretName --from-file=keyring=keyring || true
+    kubectl create secret generic $secretName --from-file=keyring=keyring --dry-run -o yaml | kubectl apply -f -
 
   done
   exit 0
