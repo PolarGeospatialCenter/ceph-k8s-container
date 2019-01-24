@@ -32,14 +32,14 @@ HOSTNAME=$(uname -n | cut -d'.' -f1)
 DAEMON_OPTS=(--cluster ${CLUSTER} --setuser ceph --setgroup ceph -d)
 
 # Internal variables
-ADMIN_KEYRING=/keyrings/client-admin/keyring
+ADMIN_KEYRING=/keyrings/client.admin/keyring
 #MON_BOOTSTRAP_KEYRING=/keyrings/mon-bootstrap/keyring
-MGR_BOOTSTRAP_KEYRING=/keyrings/mgr-bootstrap/keyring
-MDS_BOOTSTRAP_KEYRING=/keyrings/mds-bootstrap/keyring
+MGR_BOOTSTRAP_KEYRING=/keyrings/client.bootstrap-mgr/keyring
+MDS_BOOTSTRAP_KEYRING=/keyrings/client.bootstrap-mds/keyring
 MON_KEYRING=/tmp/ceph/mon/${CLUSTER}-${MON_NAME}/keyring
 MDS_KEYRING=/tmp/ceph/mds/${CLUSTER}-${MDS_NAME}/keyring
 RGW_KEYRING=/tmp/ceph/radosgw/${CLUSTER}-rgw.${RGW_NAME}/keyring
-RGW_BOOTSTRAP_KEYRING=/tmp/ceph/bootstrap-rgw/${CLUSTER}.keyring
+RGW_BOOTSTRAP_KEYRING=/keyrings/client.bootstrap-rgw/keyring
 OSD_BOOTSTRAP_KEYRING=/tmp/ceph/bootstrap-osd/${CLUSTER}.keyring
 RBD_MIRROR_BOOTSTRAP_KEYRING=/tmp/ceph/bootstrap-rbd/${CLUSTER}.keyring
 MGR_KEYRING=/var/lib/ceph/mgr/${CLUSTER}-${MGR_NAME}/keyring
