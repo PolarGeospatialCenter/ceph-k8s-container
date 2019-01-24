@@ -22,12 +22,12 @@ case "$CMD" in
     source mon/prepare_mon.sh
     prepare_mon
     ;;
-  mgr)
+  start_mgr)
     # Launch MGR
     source mgr/start_mgr.sh
     start_mgr
     ;;
-  mds)
+  start_mds)
     # Launch Monitor
     source mds/start_mds.sh
     start_mds
