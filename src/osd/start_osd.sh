@@ -33,5 +33,5 @@ function start_osd {
 
   log "Starting OSD daemon for OSD.$OSD_ID"
   #ceph-osd -f -i "${OSD_ID}" --setuser ceph --setgroup disk
-  ceph-osd -d -i ${OSD_ID} --keyring /ceph-osd/keyring -n osd.${OSD_ID} --setuser ceph --setgroup disk --osd-data /ceph-osd/
+  ceph-osd "${DAEMON_OPTS[@]}" -i ${OSD_ID} --keyring /ceph-osd/keyring -n osd.${OSD_ID} --setgroup disk --osd-data /ceph-osd/
 }

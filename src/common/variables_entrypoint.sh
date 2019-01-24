@@ -18,7 +18,7 @@ HOSTNAME=$(uname -n | cut -d'.' -f1)
 : "${RBD_MIRROR_NAME:=${HOSTNAME}}"
 : "${MGR_NAME:=${HOSTNAME}}"
 : "${MDS_NAME:=${HOSTNAME}}"
-: "${CLUSTER:=ceph}"
+: "${CLUSTER?}"
 : "${MON_DATA_DIR:=/mon/data}"
 : "${MON_HISTORY_DIR:=${MON_DATA_DIR}/history}"
 : "${CEPH_CLUSTER_NETWORK:=${CEPH_PUBLIC_NETWORK}}"
