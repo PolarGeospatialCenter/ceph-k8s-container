@@ -24,7 +24,7 @@ function start_mon {
     exit 1
   fi
 
-  FSID=$(ceph-conf --lookup fsid)
+  FSID=$(ceph-conf "${CLI_OPTS[@]}" --lookup fsid)
 
   config_start_epoch=$(jq .startEpoch $MON_CONFIGMAP)
   log "Waiting for $MON_CONFIGMAP correct start epoch to equal $MON_CLUSTER_START_EPOCH, current start epoch $config_start_epoch"
