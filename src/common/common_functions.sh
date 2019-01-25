@@ -63,8 +63,8 @@ function valid_cmd {
 
 # ceph config file exists or die
 function check_config {
-  if [[ ! -e /etc/ceph/ceph.conf ]]; then
-    log "ERROR- /etc/ceph/ceph.conf must exist; get it from your existing mon"
+  if [[ ! -e /etc/ceph/$CLUSTER.conf ]]; then
+    log "ERROR- /etc/ceph/$CLUSTER.conf must exist; get it from your existing mon"
     exit 1
   fi
 }
