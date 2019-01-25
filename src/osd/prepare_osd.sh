@@ -44,8 +44,8 @@ function prepare_osd {
     fi
   fi
 
-  log "contents of /etc/ceph/ceph.conf"
-  cat /etc/ceph/ceph.conf
+  log "contents of /etc/ceph/$CLUSTER.conf"
+  cat /etc/ceph/$CLUSTER.conf
 
   if [ "$OSD_ZAP" == "true" ]; then
     log "Zapping OSD device $OSD_DEVICE"
