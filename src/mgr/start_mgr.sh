@@ -2,7 +2,7 @@
 set -e
 
 function start_mgr {
-  : "${MGR_ID?}"
+  : "${DAEMON_ID?}"
 
   check_config
 
@@ -12,7 +12,7 @@ function start_mgr {
     #check_admin_key
     # Create ceph-mgr key
     ceph "${CLI_OPTS[@]}" auth --keyring $MGR_BOOTSTRAP_KEYRING --name client.bootstrap-mgr \
-      get-or-create mgr."$MGR_ID" mon 'allow profile mgr' osd 'allow *' mds 'allow *' -o "$MGR_KEYRING"
+      get-or-create mgr."$DAEMON_ID" mon 'allow profile mgr' osd 'allow *' mds 'allow *' -o "$MGR_KEYRING"
     chown "${CHOWN_OPT[@]}" ceph. "$MGR_KEYRING"
     chmod 600 "$MGR_KEYRING"
   fi
@@ -20,5 +20,5 @@ function start_mgr {
   log "Starting Ceph Mgr"
   # start ceph-mgr
   #while true; do sleep 2; done
-  exec /usr/bin/ceph-mgr "${DAEMON_OPTS[@]}" --keyring $MGR_KEYRING -i "$MGR_ID"
+  exec /usr/bin/ceph-mgr "${DAEMON_OPTS[@]}" --keyring $MGR_KEYRING -i "$DAEMON_ID"
 }
