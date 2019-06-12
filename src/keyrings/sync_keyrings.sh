@@ -5,7 +5,7 @@ function sync_keyrings {
   #Required Vars
   : "${CLUSTER?}"
 
-  ceph-conf --lookup mon_host
+  ceph-conf --cluster ${CLUSTER}  --lookup mon_host
   keyring=$(ceph-conf "${CLI_OPTS[@]}" --lookup keyring)
 
   if [[ ! -e $keyring ]]; then
@@ -14,7 +14,7 @@ function sync_keyrings {
 
   ping -c 1 $(ceph-conf "${CLI_OPTS[@]}" --lookup mon_host) || true
 
-  ceph mon dump
+  ceph --cluster ${CLUSTER}  mon dump
 
   quorum=$(timeout 5 ceph "${CLI_OPTS[@]}" mon dump 2> /dev/null > /dev/null)$? || true
   log "Check for quorum returned $quorum"
