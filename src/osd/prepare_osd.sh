@@ -64,8 +64,11 @@ function prepare_osd {
   chown ceph:ceph /ceph-osd
 
   ln -s /dev/osd /ceph-osd/block
+  log "Creating keyring for OSD"
   ceph-authtool --cluster $CLUSTER --create-keyring /ceph-osd/keyring --name osd.$OSD_ID --add-key $OSD_SECRET
+  log "Initializing OSD"
   ceph-osd --cluster $CLUSTER --osd-objectstore bluestore --mkfs -i $OSD_ID --osd-data /ceph-osd/ --osd-uuid $UUID --keyring /ceph-osd/keyring --conf=/etc/ceph/ceph.conf
+  log "Storing secret on OSD"
   ceph-bluestore-tool set-label-key -k osd_key -v $OSD_SECRET --dev /dev/osd
   chown -R ceph:ceph /ceph-osd/
 
