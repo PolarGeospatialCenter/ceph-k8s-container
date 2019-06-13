@@ -5,6 +5,8 @@ function start_osd {
   # Required Vars
   : "${CLUSTER?}"
 
+  export CEPH_CONF=/etc/ceph/${CLUSTER}.conf
+
   log "Activating on OSD device"
   OSD_KEYRING="/ceph-osd/kerying"
   mkdir -p /keyrings/client.admin/
