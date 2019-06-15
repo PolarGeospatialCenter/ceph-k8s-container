@@ -7,6 +7,10 @@ function start_osd {
 
   export CEPH_CONF=/etc/ceph/${CLUSTER}.conf
 
+  /ceph/bin/write-crush-location-file.sh
+  log "Wrote ceph crush location file:"
+  cat /ceph/crush-location
+
   log "Activating on OSD device"
   OSD_KEYRING="/ceph-osd/kerying"
   mkdir -p /keyrings/client.admin/
@@ -30,8 +34,6 @@ function start_osd {
     --cap osd 'allow *'
   chown -R ceph:ceph /ceph-osd
   chown ceph:ceph /dev/osd
-
-  /ceph/bin/write-crush-location-file.sh
 
   log "Starting OSD daemon for OSD.$OSD_ID"
   #ceph-osd -f -i "${OSD_ID}" --setuser ceph --setgroup disk
